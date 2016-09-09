@@ -13,6 +13,7 @@ module.exports = function (config) {
       'tests.webpack.js',
     ],
     frameworks: [
+      'jasmine-jquery',
       'jasmine-ajax',
       'jasmine'
     ],
