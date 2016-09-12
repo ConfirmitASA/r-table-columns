@@ -3,6 +3,10 @@
  */
 
 import ReportalBase from "/../../node_modules/r-reportal-base/main";
+import TableColumns from "./table-columns";
+import SortOrder from "./sort-order";
+
+
 
 class SortTable{
   /**
@@ -104,6 +108,14 @@ class SortTable{
     return sortOrder;
   }
 
+  static listenForSort(delegatedTarget, columns){
+    delegatedTarget.addEventListener('click',e=>{
+      if((e.target.tagName == 'TD' || e.target.tagName == 'TH') && columns.map(function(col){return col.column;}).indexOf(e.target)>-1){
+        this.constructor.updateSortOrder(e.target);
+      }
+    })
+  }
+
   /**
    * Creates an array of objects corresponding to the cells of `defaultHeaderRow`, that contain `sortable` property, denoting the column is sortable, `index` of the column and reference to the `cell`. Adds `.sortable` to a sortable cell
    * @return {{sortable:Boolean, index:Number, cell: HTMLTableCellElement}} - an array of objects that have this structure
@@ -186,7 +198,7 @@ class SortTable{
    * Updates `sortOrder` with the clicked cell
    * @param {HTMLTableCellElement} cell - the cell that was clicked
    * */
-  updateSorting(cell,index){
+  static updateSortOrder(cell){
     if(!cell.classList.contains('sorted')){ // this column is not sorted, there might be others that are.
       this.sortOrder.replace({column:cell.cellIndex, direction: 'asc'});
     } else { //swaps sorting from asc to desc

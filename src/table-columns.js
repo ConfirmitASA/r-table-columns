@@ -12,15 +12,12 @@ class TableColumns{
    * @return {{sortable:Boolean, index:Number, cell: HTMLTableCellElement}} - an array of objects that have this structure
    * */
   constructor(options){
-    let {source, defaultHeaderRow=-1} = options;
-    let thead;
-    if(source){
-      thead=this.constructor.getHeader(source);
-    } else {
-      throw new Error('`source` table is not specified, cannot create TableColumns');
-    }
-    const headerRow = typeof defaultHeaderRow === 'object'? defaultHeaderRow : this.constructor.getDefaultHeaderRow(thead,defaultHeaderRow);
-    return this.constructor.computeColumns(thead, headerRow);
+    let {source,refSource, defaultHeaderRow=-1} = options;
+    let thead,refThead;
+    if(source){thead=this.constructor.getHeader(source)} else {throw new Error('`source` table is not specified, cannot create TableColumns')}
+    if(refSource){refThead=this.constructor.getHeader(refSource)}
+    this.defaultHeaderRowIndex = defaultHeaderRow;
+    return this.constructor.computeColumns(thead,refThead);
   }
 
   /**
@@ -28,45 +25,58 @@ class TableColumns{
    * @param {HTMLTableElement} source - source table headers are created for
    * */
   static getHeader(source){
-    let header = source.parentNode.querySelector("table#${source.id}>thead");
+    let header = source.querySelector("thead");
     if(!header || header.children.length==0){
       throw new Error('`source` table has no header or rows');
     }
   }
 
   /**
-   * Calculates defaultHeaderRow
+   * Calculates defaultHeaderRow for a passed `thead`
    * @param {HTMLTableElement} thead - source table header
-   * @param {Number} defaultHeaderRow - index of the row in `thead` (incremented from 0) that will be considered default to have actions executed upon.
+   * @param {Number} defaultHeaderRowIndex - index of the row in `thead` (incremented from 0) that will be considered default to have actions executed upon.
+   * @return {{index:Number, row: HTMLTableRowElement}}
    * */
-  static getDefaultHeaderRow(thead, defaultHeaderRow){
+  static getDefaultHeaderRow(thead){
     // calculate default header row
     let headerRows = thead.children,
-        //auxHeaderRows = auxHeader?auxHeader.querySelector('thead').children:null,
-        headerRowIndex = defaultHeaderRow==-1?headerRows.length+defaultHeaderRow:defaultHeaderRow;
+        headerRowIndex = this.defaultHeaderRowIndex==-1 ? headerRows.length + this.defaultHeaderRowIndex : this.defaultHeaderRowIndex;
     return {
       index:headerRowIndex,
-      row:headerRows.item(headerRowIndex),
-      //auxRow:auxHeaderRows?auxHeaderRows.item(headerRowIndex):null
+      row:headerRows.item(headerRowIndex)
     };
   }
 
-  static computeColumns(thead, defaultHeaderRow){
-    var headerRows = thead.children;
-    let headerColumns = [].slice.call(defaultHeaderRow.row.children);
-    // if there is more than one row in header and if the first header has a cell with rowspan, add it to the array as a data item
-    if(headerRows.length>1 && headerRows.item(0).children.item(0).rowSpan>1){
-      headerColumns.unshift(headerRows.item(0).children.item(0));
+  /**
+   * Gets an array of header cell nodes from default header row
+   * @param {?HTMLTableElement} thead - source table header
+   * @return {?Array} Returns an array of header cell nodes or null if `thead` is not specified
+   * */
+  static getHeaderCells(thead){
+    if(thead){
+      let headerRows = thead.children;
+      let headerColumns = [].slice.call(this.constructor.getDefaultHeaderRow(thead).row.children);
+      // if there is more than one row in header and if the first header has a cell with rowspan, add it to the array as a data item
+      if(headerRows.length>1 && headerRows.item(0).children.item(0).rowSpan>1){
+        headerColumns.unshift(headerRows.item(0).children.item(0));
+      }
+      return headerColumns;
     }
+    return null
+  }
+
+  static computeColumns(thead,refThead,defaultHeaderRowIndex){
+    let theadCells = getHeaderCells(thead);
+    let refTheadCells = getHeaderCells(refThead);
     let realColumnIndex=0;
-    return headerColumns.map((cell,index)=>{
+    return theadCells.map((cell,index)=>{
       let obj = {
         index: realColumnIndex,
         title: cell.textContent,
-        HTMLElement: cell,
-        colSpan:cell.colSpan,
-        //auxCell: auxCell
+        cell,
+        colSpan:cell.colSpan
       };
+      if(refTheadCells!=null){obj.refCell = refTheadCells[index]}
       // we need to increment the colspan only for columns that follow rowheader because the block is not in data.
       realColumnIndex= realColumnIndex>0?(realColumnIndex + cell.colSpan):realColumnIndex+1;
       return obj;
