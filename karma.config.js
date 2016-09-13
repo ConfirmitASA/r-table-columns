@@ -2,7 +2,7 @@ var path = require('path');
 
 module.exports = function (config) {
   config.set({
-    browsers: ['PhantomJS','Chrome','Firefox','IE', 'Opera'],
+    browsers: ['PhantomJS',/*'Chrome','Firefox','IE'*/],
     coverageReporter: {
       reporters: [
         { type: 'html', subdir: 'html' },
@@ -10,6 +10,18 @@ module.exports = function (config) {
       ],
     },
     files: [
+      {
+        pattern: 'src/__tests__/fixtures/**/*.html',
+        watched: true,
+        included: false,
+        served: true
+      },
+      {
+        pattern: 'src/__tests__/fixtures/*.json',
+        watched: true,
+        included: false,
+        served: true
+      },
       'tests.webpack.js',
     ],
     frameworks: [
@@ -29,7 +41,7 @@ module.exports = function (config) {
           {
             test: /-test\.js$/,
             include: /src/,
-            exclude: /(bower_components|node_modules)/,
+            exclude: /(node_modules|bower_components)/,
             loader: 'babel',
             query: {
               cacheDirectory: true,
@@ -37,8 +49,8 @@ module.exports = function (config) {
           },
           {
             test: /\.js?$/,
-            include: /src/,
-            exclude: /(node_modules|bower_components|__tests__)/,
+            include:/src/,
+            exclude: /(bower_components|__tests__)/,
             loader: 'babel-istanbul',
             query: {
               cacheDirectory: true,
@@ -49,7 +61,7 @@ module.exports = function (config) {
           {
             test: /\.js$/,
             include: path.resolve(__dirname, '../src'),
-            exclude: /(bower_components|node_modules|__tests__)/,
+            exclude: /(node_modules|__tests__)/,
             loader: 'babel',
             query: {
               cacheDirectory: true,

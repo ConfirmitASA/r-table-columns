@@ -20,11 +20,19 @@ class SortOrder {
     return this.sortOrder;
   }
 
-  static getCell(column){
-    let cells = [];
-    if(this.columns[column].cell){cells.push(this.columns[column].cell)}
-    if(this.columns[column].refCell){cells.push(this.columns[column].refCell)}
-    return cells;
+  /**
+   * Returns an array containing a cell from the table and a reference cell from the floating header if any
+   * @param {!Number} columnIndex - index of the column from the array of columns from {@link TableColumns}
+   * */
+  static getCell(columnIndex){
+    if(typeof columnIndex != 'undefined' && columnIndex!=null){
+      let cells = [];
+      if(this.columns[columnIndex].cell){cells.push(this.columns[columnIndex].cell)}
+      if(this.columns[columnIndex].refCell){cells.push(this.columns[columnIndex].refCell)}
+      return cells;
+    } else {
+      throw new TypeError('columnIndex parameter should not be null');
+    }
   }
 
   /**

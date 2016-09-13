@@ -1,14 +1,6 @@
-/**
- * Created by IvanP on 09.09.2016.
- */
+import ReportalBase from "r-reporal-base/src/reportal-base";
 
-import ReportalBase from "/../../node_modules/r-reportal-base/main";
-import TableColumns from "./table-columns";
-import SortOrder from "./sort-order";
-
-
-
-class SortTable{
+class SortTable {
   /**
    * Makes a table sortable, gives API for sorting. It sorts `data` array, but doesn't move rows in the `source` table, because of differences in implementation
    * @param {Object} options - options passed to configure the Sorting
@@ -25,7 +17,7 @@ class SortTable{
    * */
 
   constructor(options){
-    {enabled=false,source,auxHeader,defaultHeaderRow=-1,columns,excludedColumns,defaultSorting=[],data=[]}=options;
+    //var {enabled=false,source,auxHeader,defaultHeaderRow=-1,columns,excludedColumns,defaultSorting=[],data=[]}=options;
     this._sortEvent = ReportalBase.newEvent('reportal-table-sort');
 
     this.enabled=enabled;
