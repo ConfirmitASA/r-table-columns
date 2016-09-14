@@ -61,23 +61,35 @@ class TableColumns{
    * */
   static getHeaderCells(thead,defaultHeaderRowIndex){
     if(thead){
-      let headerRows = thead.children;
       if(defaultHeaderRowIndex!=null){
         let defaultHeaderRow = TableColumns.getDefaultHeaderRow(thead,defaultHeaderRowIndex);
-        let headerColumns = [].slice.call(defaultHeaderRow.row.children);
-        // if there is more than one row in header and if the first header has a cell with rowspan, add it to the array as a data item
-        if(headerRows.length>1 && defaultHeaderRow.index!=0){
-          let rowsLength = headerRows.length;
-          while(rowsLength--){
-            if(rowsLength<defaultHeaderRow.index){
-              let rowspanned = headerRows.item(rowsLength).querySelectorAll('[rowspan]');
-              [].slice.call(rowspanned).forEach(column=>headerColumns.unshift(column));
+        let headerRows = thead.children;
+        let rowsLength = headerRows.length;
+        let abstr = {};
+        for(let r=0;r<rowsLength;r++){
+          let row = headerRows.item(r);
+          let augmentIndex=0; // index that will account for colSpan of upper rows' cells
+          [].slice.call(row.children).forEach((cell,index)=>{ //iterate through cells
+            for(let rs=0; rs<=cell.rowSpan-1;rs++){ //spread cell across its rowspan
+              let rowA = abstr[r+rs] = abstr[r+rs] || {}; //create row if not exists
+              if(!rowA[augmentIndex]){ //insert cell into slot if not filled
+                rowA[augmentIndex]=cell;
+              } else { //if filled look for the next empty because rowspanned columns fill them in a linear way
+                let i=0;
+                while(true){
+                  if(!rowA[i]){
+                    rowA[i]=cell;
+                    augmentIndex=i;
+                    break;
+                  }
+                  i++;
+                }
+              }
             }
-          }
-          //TODO: add ability to add all columns with rowspan equal to total height of row to be used for sorting
-          //headerColumns.unshift(headerRows.item(0).children.item(0));
+            augmentIndex+=cell.colSpan;
+          })
         }
-        return headerColumns;
+        return Object.keys(abstr[defaultHeaderRow.index]).map(k => abstr[defaultHeaderRow.index][k])
       } else {
         throw new TypeError('TableColumns.getHeaderCells: defaultHeaderRowIndex is not specified or is not a Number')
       }
@@ -109,62 +121,5 @@ class TableColumns{
       return obj;
     });
   }
-
-  /*setupColumns1(columns,excluded){
-   var headerRows = this.source.querySelector('thead').children;
-   if(headerRows.length==0){console.warn(`Sorting is impossible because table#${source.id} doesn't have headers`);return;}
-   let headerColumns = [].slice.call(this.defaultHeaderRow.row.children);
-   if(headerRows.length>1 && headerRows.item(0).children.item(0).rowSpan>1){ // if there is more than one row in header and if the first header has a cell with rowspan, add it to the array
-   headerColumns.unshift(headerRows.item(0).children.item(0));
-   }
-   if(this.defaultHeaderRow.auxRow){
-   var auxHeaderRows = this.defaultHeaderRow.auxRow.parentNode.children;
-   var auxHeaderColumns = [].slice.call(this.defaultHeaderRow.auxRow.children);
-   if(headerRows.length>1 && headerRows.item(0).children.item(0).rowSpan>1){
-   auxHeaderColumns.unshift(auxHeaderRows.item(0).children.item(0));
-   }
-   }
-   var realColumnIndex=0;
-   return headerColumns.map((cell,index)=>{
-   let sortable = (!(columns && columns.indexOf(cell.cellIndex)==-1) || (excluded && excluded.indexOf(index)==-1)); // is in columns and not in excluded,
-   if(sortable){
-   cell.addEventListener('click',(el)=>{
-   if(el.target.localName =='td'||el.target.localName =='th'){this.updateSorting(el.target);} //we want to capture click on the cell and not buttons in it
-   });
-   cell.classList.add('sortable');
-   if(auxHeaderColumns){
-   var auxCell = auxHeaderColumns[index];
-   auxCell.addEventListener('click',(el)=>{
-   if(el.target.localName =='td'||el.target.localName =='th'){this.updateSorting(el.target);} //we want to capture click on the cell and not buttons in it
-   });
-   auxCell.classList.add('sortable');
-   }
-   }
-   let _sorted = null,
-   self = this;
-   var obj = {
-   sortable:sortable,
-   get sorted(){return _sorted},
-   set sorted(val){
-   _sorted = val;
-   if(val){
-   this.cell.classList.add('sorted');
-   this.auxCell?this.auxCell.classList.add('sorted'):null;
-   } else {
-   this.cell.classList.remove('sorted','asc','desc');
-   this.auxCell?this.auxCell.classList.remove('sorted','asc','desc'):null;
-   }
-   },
-   index: realColumnIndex,
-   cell: cell,
-   auxCell: auxCell
-   };
-   // we need to increment the colspan only for columns that follow rowheader because the block is not in data.
-   realColumnIndex= realColumnIndex>0?(realColumnIndex + cell.colSpan):realColumnIndex+1;
-   return obj;
-   });
-   }*/
-
-
 }
 export default TableColumns;

@@ -1,4 +1,7 @@
 import ReportalBase from "r-reporal-base/src/reportal-base";
+import TableColumns from "./table-columns";
+import SortOrder from "./sort-order";
+
 
 class SortTable {
   /**
@@ -6,9 +9,9 @@ class SortTable {
    * @param {Object} options - options passed to configure the Sorting
    * @param {Boolean} options.enabled=false - enables sorting on a header of a table
    * @param {HTMLTableElement} options.source - source table sorting will be applied to
-   * @param {HTMLTableElement} [options.auxHeader] - the floating header if any, will reflect and trigger sorting on header when scrolled.
+   * @param {HTMLTableElement} [options.refSource] - the floating header if any, will reflect and trigger sorting on header when scrolled.
    * @param {Number} [options.defaultHeaderRow=-1] - index of the row in `thead` (incremented from 0) that will have sorting enabled for columns. If `-1` then last row.
-   * @param {Array} [options.columns] - Array of column indices (incremented from 0) that will have sorting enabled. If not specified, all columns will be sortable. Optionally `excludedColumns` can be specified instead as a shorthand to pass only indices of columns to be excluded from sorting, assumning that others will be made sortable
+   * @param {Array} [options.columns] - Array of column indices (incremented from 0) that will have sorting enabled. If not specified, all columns will be sortable. Optionally `excludedColumns` can be specified instead as a shorthand to pass only indices of columns to be excluded from sorting, assumning that others will be made sortable. It's important to count the column index in the defaultHeaderRow
    * @param {Array} [options.excludedColumns] - Array of column indices (incremented from 0) that will be excluded from sorting. Can be used as a shorthand instead of `columns`.
    * @param {Object} [options.defaultSorting] - an array of objects that specify default sorting
    * @param {Number} options.defaultSorting.column - column index
@@ -17,7 +20,7 @@ class SortTable {
    * */
 
   constructor(options){
-    //var {enabled=false,source,auxHeader,defaultHeaderRow=-1,columns,excludedColumns,defaultSorting=[],data=[]}=options;
+    let {enabled=false,source,refSource,defaultHeaderRow=-1,columns,excludedColumns,defaultSorting=[],data=[]}=options;
     this._sortEvent = ReportalBase.newEvent('reportal-table-sort');
 
     this.enabled=enabled;
@@ -29,149 +32,47 @@ class SortTable {
 
     this.data = data;
 
-    // calculate default header row
-    let headerRows = source.querySelector('thead').children,
-      auxHeaderRows = auxHeader?auxHeader.querySelector('thead').children:null,
-      headerRowIndex = defaultHeaderRow==-1?headerRows.length+defaultHeaderRow:defaultHeaderRow;
-    this.defaultHeaderRow={index:headerRowIndex, row:headerRows.item(headerRowIndex), auxRow:auxHeaderRows?auxHeaderRows.item(headerRowIndex):null};
-
-    this.sortOrder = [];//necessary for proper initialization of `columns`
-    this.columns=this.setupColumns(columns, excludedColumns);
-
+    //let tableColumns= new TableColumns({source, refSource, defaultHeaderRow});
     // setup sort order and do initial default sorting
-    this.sortOrder = this.setupSortOrder(defaultSorting);
+    let sortableColumns=SortTable.defineSortableColumns(new TableColumns({source, refSource, defaultHeaderRow}), columns, excludedColumns);
+    [source,refSource].forEach(src=>SortTable.listenForSort(TableColumns.getHeader(src),sortableColumns));// set up listeners for headers
+    this.sortOrder = new SortOrder(sortableColumns, SortTable.sort, defaultSorting);
 
-    this.sort(); //initial sorting if any
+    SortTable.sort(); //initial sorting if any
   }
 
-  /**
-   * Creates a `sortOrder` array with utility functions `add`,`remove`,`replace`
-   * @param {Object} defaultSorting - an array of objects that specify default sorting
-   * @param {Number} defaultSorting.column - column index
-   * @param {String} defaultSorting.direction - sort direction (`asc`|`desc`)
-   * @return {Array}
-   * */
-  setupSortOrder(defaultSorting){
-    var sortOrder = [];
-    var self = this;
-    /**
-     * Replaces all items in sort order
-     * @param {{column:Number,direction:String}} obj - object describing sorting
-     * @param {Number} obj.column - column index
-     * @param {String} obj.direction - sort direction (`asc`|`desc`)
-     * */
-    sortOrder.replace = function(obj){
-      if(this.length>0){
-        this.forEach((item,index)=>{
-          this.remove(index,item.column);
-        });
-      }
-      this.add(obj);
-      self.sort();
-    };
 
-    /**
-     * Adds another column to be sorted
-     * @param {{column:Number,direction:String}} obj - object describing sorting
-     * @param {Number} obj.column - column index
-     * @param {String} obj.direction - sort direction (`asc`|`desc`)
-     * */
-    sortOrder.add = function(obj){
-      self.columns[obj.column].cell.classList.add('sorted',obj.direction);
-      if(self.columns[obj.column].auxCell)self.columns[obj.column].auxCell.classList.add('sorted',obj.direction);
-      sortOrder.push(obj);
-    };
-
-    /**
-     * Removes a column from `sortOrder`
-     * @param {Number} index - index of item in `sortOrder` array to be removed
-     * @param {Number} column - column index as reference to the item to be removed.
-     * */
-    sortOrder.remove = function(index,column){
-      self.columns[column].cell.classList.remove('sorted','asc','desc');
-      if(self.columns[column].auxCell)self.columns[column].auxCell.classList.remove('sorted','asc','desc');
-      this.splice(index,1);
-    };
-
-    if(defaultSorting.length>0){
-      defaultSorting.forEach(item=>sortOrder.add(item));
-    }
-
-    return sortOrder;
-  }
-
-  static listenForSort(delegatedTarget, columns){
-    delegatedTarget.addEventListener('click',e=>{
-      if((e.target.tagName == 'TD' || e.target.tagName == 'TH') && columns.map(function(col){return col.column;}).indexOf(e.target)>-1){
-        this.constructor.updateSortOrder(e.target);
+  //{index:Number, title:String, colSpan:Number, cell: HTMLTableCellElement, ?refCell:HTMLTableCellElement}
+  static defineSortableColumns(columns, included, excluded){
+    return columns.map((column,index)=>{
+      let sortable = (!(included && included.indexOf(column.cell.cellIndex)==-1) || (excluded && excluded.indexOf(index)==-1)); // is in columns and not in excluded,
+      if(sortable){
+        column.cell.classList.add('sortable');
+        column.sortable = true;
       }
     })
   }
 
   /**
-   * Creates an array of objects corresponding to the cells of `defaultHeaderRow`, that contain `sortable` property, denoting the column is sortable, `index` of the column and reference to the `cell`. Adds `.sortable` to a sortable cell
-   * @return {{sortable:Boolean, index:Number, cell: HTMLTableCellElement}} - an array of objects that have this structure
+   * sets up listeners for column headers available for click
+   * @param {HTMLElement} delegatedTarget - element that will receive clicks and see if they are valid, `thead` is recommended to boil down to header clicks only
+   * @param {Array} columns - array of table columns from {@link SortTable#defineSortableColumns}
+   * @listens click
    * */
-  setupColumns(columns,excluded){
-    var headerRows = this.source.querySelector('thead').children;
-    if(headerRows.length==0){console.warn(`Sorting is impossible because table#${source.id} doesn't have headers`);return;}
-    let headerColumns = [].slice.call(this.defaultHeaderRow.row.children);
-    if(headerRows.length>1 && headerRows.item(0).children.item(0).rowSpan>1){ // if there is more than one row in header and if the first header has a cell with rowspan, add it to the array
-      headerColumns.unshift(headerRows.item(0).children.item(0));
-    }
-    if(this.defaultHeaderRow.auxRow){
-      var auxHeaderRows = this.defaultHeaderRow.auxRow.parentNode.children;
-      var auxHeaderColumns = [].slice.call(this.defaultHeaderRow.auxRow.children);
-      if(headerRows.length>1 && headerRows.item(0).children.item(0).rowSpan>1){
-        auxHeaderColumns.unshift(auxHeaderRows.item(0).children.item(0));
+  static listenForSort(delegatedTarget, columns){
+    delegatedTarget.addEventListener('click',e=>{
+      if((e.target.tagName == 'TD' || e.target.tagName == 'TH') && columns.filter(col=>col.sortable).map(function(col){return col.column;}).indexOf(e.target)>-1){
+        this.constructor.updateSortOrder(e.target);
       }
-    }
-    var realColumnIndex=0;
-    return headerColumns.map((cell,index)=>{
-      let sortable = (!(columns && columns.indexOf(cell.cellIndex)==-1) || (excluded && excluded.indexOf(index)==-1)); // is in columns and not in excluded,
-      if(sortable){
-        cell.addEventListener('click',(el)=>{
-          if(el.target.localName =='td'||el.target.localName =='th'){this.updateSorting(el.target);} //we want to capture click on the cell and not buttons in it
-        });
-        cell.classList.add('sortable');
-        if(auxHeaderColumns){
-          var auxCell = auxHeaderColumns[index];
-          auxCell.addEventListener('click',(el)=>{
-            if(el.target.localName =='td'||el.target.localName =='th'){this.updateSorting(el.target);} //we want to capture click on the cell and not buttons in it
-          });
-          auxCell.classList.add('sortable');
-        }
-      }
-      let _sorted = null,
-        self = this;
-      var obj = {
-        sortable:sortable,
-        get sorted(){return _sorted},
-        set sorted(val){
-          _sorted = val;
-          if(val){
-            this.cell.classList.add('sorted');
-            this.auxCell?this.auxCell.classList.add('sorted'):null;
-          } else {
-            this.cell.classList.remove('sorted','asc','desc');
-            this.auxCell?this.auxCell.classList.remove('sorted','asc','desc'):null;
-          }
-        },
-        index: realColumnIndex,
-        cell: cell,
-        auxCell: auxCell
-      };
-      // we need to increment the colspan only for columns that follow rowheader because the block is not in data.
-      realColumnIndex= realColumnIndex>0?(realColumnIndex + cell.colSpan):realColumnIndex+1;
-      return obj;
-    });
+    })
   }
+
 
   /**
    * Performs sorting. Can sort two columns if `sortOrder` has two items, the first of which has priority.
    * @return {Event} - `reportal-table-sort` event
    * */
-  sort(){
+  static sort(){
     if(this.sortOrder && this.sortOrder.length>0){
       this.data.forEach((block,index,array)=>{
         block.sort((a, b)=>{ // sort rows
