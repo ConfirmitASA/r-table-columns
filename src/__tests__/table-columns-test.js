@@ -50,9 +50,9 @@ describe('TableColumns', () => {
     it('should return null if no header is passed',()=>{
       expect(TableColumns.getHeaderCells()).toBeNull();
     });
-    it('should return an array of 15 cells from last row',()=>{
+    it('should return an array of 17 cells from last row',()=>{
       let hc = TableColumns.getHeaderCells($j('#confirmit_agg_table thead')[0],-1);
-      expect(hc.length).toEqual(15);
+      expect(hc.length).toEqual(17);
     });
     it('should return an array of 10 cells from first row',()=>{
       let hc = TableColumns.getHeaderCells($j('#confirmit_agg_table thead')[0],0);
@@ -68,20 +68,18 @@ describe('TableColumns', () => {
       let thead = $j('#confirmit_agg_table thead')[0];
       let refThead = $j('#confirmit_agg_table thead')[0]; // not to create another table
       expect(()=>TableColumns.computeColumns(thead, refThead, -1)).not.toThrow();
-      //console.log(TableColumns.computeColumns(thead, refThead, -1));
     });
-    it('should be an array and contain 15 children',()=>{
+    it('should be an array and contain 17 children',()=>{
       let thead = $j('#confirmit_agg_table thead')[0];
       let refThead = $j('#confirmit_agg_table thead')[0]; // not to create another table
       let columns = TableColumns.computeColumns(thead, refThead, -1);
       expect(Array.isArray(columns)).toBe(true);
-      expect(columns.length).toEqual(15);
+      expect(columns.length).toEqual(17);
     });
     it('array item should contain 4 properties',()=>{
       let thead = $j('#confirmit_agg_table thead')[0];
       let refThead = $j('#confirmit_agg_table thead')[0]; // not to create another table
       let column = TableColumns.computeColumns(thead, refThead, -1)[14];
-      //console.log(column);
       expect(column.index).toBeDefined();
       expect(typeof column.index).toEqual('number');
       expect(column.cell).toBeDefined();
@@ -94,7 +92,6 @@ describe('TableColumns', () => {
     it('array item should not contain refCell',()=>{
       let thead = $j('#confirmit_agg_table thead')[0];
       let column = TableColumns.computeColumns(thead, null, -1)[14];
-      console.log(column);
       expect(column.refCell).not.toBeDefined();
     });
   });

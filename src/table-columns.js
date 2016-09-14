@@ -8,12 +8,12 @@ class TableColumns{
    * `index` of the column and reference to the `cell`. Adds `.sortable` to a sortable cell
    * @param {Object} options - options passed to configure the Sorting
    * @param {HTMLTableElement} options.source - source table sorting will be applied to
+   * @param {HTMLTableElement} options.refSource - floating header if any
    * @param {Number|Object} [options.defaultHeaderRow=-1] - index of the row in `thead` (incremented from 0) that will have sorting enabled for columns. If `-1` then last row.
-   * @return {{sortable:Boolean, index:Number, cell: HTMLTableCellElement}} - an array of objects that have this structure
+   * @return {{index:Number, title:String, colSpan:Number, cell: HTMLTableCellElement, ?refCell:HTMLTableCellElement}} - an array of objects that have this structure
    * */
   constructor(options){
-    let {source,refSource, defaultHeaderRow=-1} = options;
-    console.log(options);
+    let {source,refSource,defaultHeaderRow=-1} = options;
     let thead,refThead;
     if(source){thead=TableColumns.getHeader(source)} else {throw new TypeError('`source` table is not specified, cannot create TableColumns')}
     if(refSource){refThead=TableColumns.getHeader(refSource)}
@@ -63,10 +63,19 @@ class TableColumns{
     if(thead){
       let headerRows = thead.children;
       if(defaultHeaderRowIndex!=null){
-        let headerColumns = [].slice.call(TableColumns.getDefaultHeaderRow(thead,defaultHeaderRowIndex).row.children);
+        let defaultHeaderRow = TableColumns.getDefaultHeaderRow(thead,defaultHeaderRowIndex);
+        let headerColumns = [].slice.call(defaultHeaderRow.row.children);
         // if there is more than one row in header and if the first header has a cell with rowspan, add it to the array as a data item
-        if(headerRows.length>1 && defaultHeaderRowIndex!=0 && headerRows.item(0).children.item(0).rowSpan>1){
-          headerColumns.unshift(headerRows.item(0).children.item(0));
+        if(headerRows.length>1 && defaultHeaderRow.index!=0){
+          let rowsLength = headerRows.length;
+          while(rowsLength--){
+            if(rowsLength<defaultHeaderRow.index){
+              let rowspanned = headerRows.item(rowsLength).querySelectorAll('[rowspan]');
+              [].slice.call(rowspanned).forEach(column=>headerColumns.unshift(column));
+            }
+          }
+          //TODO: add ability to add all columns with rowspan equal to total height of row to be used for sorting
+          //headerColumns.unshift(headerRows.item(0).children.item(0));
         }
         return headerColumns;
       } else {
