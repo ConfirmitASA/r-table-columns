@@ -1,24 +1,32 @@
 class SortOrder {
   /**
    * Creates a `sortOrder` array
-   * @param {Object} columns - an array of columns from {@link TableColumns}
-   * @param sortCallback - function that performs sorting based on the `sortOrder`
-   * @param {Object} [defaultSorting] - an array of objects that specify default sorting
-   * @param {Number} defaultSorting.column - column index
-   * @param {String} defaultSorting.direction - sort direction (`asc`|`desc`)
+   * @param {Object} options - configuration options
+   * @param {Object} options.columns - an array of columns from {@link TableColumns}
+   * @param {Function} options.sortCallback - function that performs sorting based on the `sortOrder`
+   * @param {Object} options.sortCallbackScope - scope in which sort callback needs to be executed
+   * @param {Object} [options.defaultSorting] - an array of objects that specify default sorting
+   * @param {Number} options.defaultSorting.column - column index
+   * @param {String} options.defaultSorting.direction - sort direction (`asc`|`desc`)
    * @return {Array}
    * */
-  constructor(columns, sortCallback, defaultSorting=[]){
+  constructor(options){
+    let {columns, sortCallback,  defaultSorting=[],sortCallbackScope=this} = options;
+
     this.sortOrder = [];
     if(typeof columns != undefined && columns != null){
       this.columns = columns;
     } else {
       throw new TypeError('SortOrder: columns must be specified');
     }
-    this.constructor.sort = sortCallback && typeof sortCallback === 'function'? sortCallback : function(){};
+    this.sort = ()=>{
+      if(sortCallback && typeof sortCallback === 'function'){
+        sortCallback.call(sortCallbackScope,this)
+      }
+    };
     if(defaultSorting.length>0){
       defaultSorting.forEach(item=>this.add(item));
-      this.constructor.sort();
+      this.sort();
     }
   }
 
@@ -81,8 +89,7 @@ class SortOrder {
       });
     }
     this.add(obj);
-    this.constructor.sort();
+    this.sort();
   };
-  //static sort(){}
 }
 export default SortOrder;

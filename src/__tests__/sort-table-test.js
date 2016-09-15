@@ -33,7 +33,7 @@ describe('SortTable', () => {
     });
     it('should accept included array and make sortable only those',()=>{
       included = [0,1];
-      sortableColumns = SortTable.defineSortableColumns(columns, included, excluded);
+      sortableColumns = SortTable.defineSortableColumns(columns, included);
       let sortable = sortableColumns.filter(cell=>cell.sortable==true);
       expect(sortable.length).toEqual(2);
       sortable.forEach((column,index)=>{
@@ -51,27 +51,144 @@ describe('SortTable', () => {
     });
     it('should accept excluded array and not to make sortable only those',()=>{
       excluded = [0,1];
-      sortableColumns = SortTable.defineSortableColumns(columns, included, excluded);
-      let sortable = sortableColumns.filter(cell=>cell.sortable==true);
-      let not_sortable = sortableColumns.filter(cell=>!cell.sortable);
+      sortableColumns = SortTable.defineSortableColumns(columns, undefined, excluded);
+      let sortable = sortableColumns.filter(cell=>cell.sortable);
+      let not_sortable = sortableColumns.filter(cell=>!cell.hasOwnProperty('sortable'));
+
       expect(not_sortable.length).toEqual(2);
       expect(sortable.length).toEqual(columns.length-not_sortable.length);
       sortable.forEach((column,index)=>{
         expect($j(column.cell)).toBeMatchedBy('.sortable');
-        expect(column.index).toEqual(index);
+        expect(column.index).toEqual(index+2);
         if(column.refCell){expect($j(column.refCell)).toBeMatchedBy('.sortable');}
       });
 
       not_sortable.forEach((column,index)=>{
         expect($j(column.cell)).not.toBeMatchedBy('.sortable');
+        expect(column.index).toEqual(index);
         if(column.refCell){expect($j(column.refCell)).not.toBeMatchedBy('.sortable');}
       });
     });
   });
 
-  xdescribe('SortTable.sortDimension',()=> {
-
+  describe('SortTable.sortDimension',()=> {
+    var data,sortOrder;
+    beforeEach(()=>{
+      data = [[10,20,30,40],[10,21,22,12],[10,16,15,5],[11,14,40,41]];
+      sortOrder = new SortOrder({columns});
+    });
+    it('should sort on first column only asc',()=>{
+      sortOrder.replace({column:0, direction:'asc'});
+      SortTable.sortDimension(data,columns,sortOrder.sortOrder);
+      expect(data).toEqual([[11, 14, 40, 41], [10, 20, 30, 40], [10, 21, 22, 12], [10, 16, 15, 5]]);
+    });
+    it('should sort on first column asc and second column desc',()=>{
+      sortOrder.add({column:0, direction:'asc'});
+      sortOrder.add({column:1, direction:'desc'});
+      SortTable.sortDimension(data,columns,sortOrder.sortOrder);
+      expect(data).toEqual([[11, 14, 40, 41], [10, 16, 15, 5], [10, 20, 30, 40], [10, 21, 22, 12]]);
+    });
 
   });
 
+  describe('SortTable.sorter',()=> {
+
+    it('should return 0 for identical numbers descending',()=>{
+      let s = SortTable.sorter(5,5,-1);
+      expect(s).toEqual(0);
+    });
+    it('should return 0 for identical numbers ascending',()=>{
+      let s = SortTable.sorter(5,5,1);
+      expect(s).toEqual(0);
+    });
+    it('should return 1 for descending sort order',()=>{
+      let s = SortTable.sorter(6,5,-1);
+      expect(s).toEqual(1);
+    });
+    it('should return -1 for ascending sort order',()=>{
+      let s = SortTable.sorter(6,5,1);
+      expect(s).toEqual(-1);
+    });
+    it('should return -1 for descending sort order',()=>{
+      let s = SortTable.sorter(5,6,-1);
+      expect(s).toEqual(-1);
+    });
+    it('should return 1 for ascending sort order',()=>{
+      let s = SortTable.sorter(5,6,1);
+      expect(s).toEqual(1);
+    });
+    it('should return 0 for identical numbers descending',()=>{
+      let s = SortTable.sorter("5","5",-1);
+      expect(s).toEqual(0);
+    });
+    it('should return 0 for identical numbers ascending',()=>{
+      let s = SortTable.sorter("5",5,1);
+      expect(s).toEqual(0);
+    });
+    it('should return 1 for descending sort order',()=>{
+      let s = SortTable.sorter(6,"5",-1);
+      expect(s).toEqual(1);
+    });
+    it('should return -1 for ascending sort order',()=>{
+      let s = SortTable.sorter("6.1","5.1",1);
+      expect(s).toEqual(-1);
+    });
+    it('should return -1 for descending sort order',()=>{
+      let s = SortTable.sorter("5",6.1,-1);
+      expect(s).toEqual(-1);
+    });
+    it('should return 1 for ascending sort order',()=>{
+      let s = SortTable.sorter("5","6",1);
+      expect(s).toEqual(1);
+    });
+    it('should return 1 for ascending sort order where a=null',()=>{
+      let s = SortTable.sorter(null,5,1);
+      expect(s).toEqual(1);
+    });
+    it('should return 1 for decending sort order where a=null',()=>{
+      let s = SortTable.sorter(null,5,-1);
+      expect(s).toEqual(1);
+    });
+    it('should return -1 for ascending sort order where b=null',()=>{
+      let s = SortTable.sorter(6,null,1);
+      expect(s).toEqual(-1);
+    });
+    it('should return -1 for decending sort order where b=null',()=>{
+      let s = SortTable.sorter(6,null,-1);
+      expect(s).toEqual(-1);
+    });
+    it('should compare strings in html asc',()=>{
+      let s = SortTable.sorter('<b>a</b>','<b>b</b>',1);
+      expect(s).toEqual(1);
+    });
+    it('should compare strings in html desc',()=>{
+      let s = SortTable.sorter('<b>a</b>','<b>b</b>',-1);
+      expect(s).toEqual(-1);
+    });
+    it('should compare strings in html asc case insensitive',()=>{
+      let s = SortTable.sorter('<em>b</em>','<b>A</b>',1);
+      expect(s).toEqual(-1);
+    });
+    it('should compare strings in html desc case insensitive',()=>{
+      let s = SortTable.sorter('<b>B</b>','<span>a</span>',-1);
+      expect(s).toEqual(1);
+    });
+    it('should compare strings in html desc case insensitive',()=>{
+      let s = SortTable.sorter('<b>B</b>','<span>b</span>',-1);
+      expect(s).toEqual(0);
+    });
+
   });
+
+  describe('SortTable.constructor',()=> {
+    var data,sortOrder;
+    it('should sort on defaultSorting on declaration on two columns',()=>{
+      data = [[10,20,30,40],[10,21,22,12],[10,16,15,5],[11,14,40,41]];
+      let st = new SortTable({source:$j('#confirmit_agg_table')[0], defaultSorting:[{column:0, direction:'asc'},{column:1, direction:'desc'}], data: data});
+      expect(st.data).toEqual([[11, 14, 40, 41], [10, 16, 15, 5], [10, 20, 30, 40], [10, 21, 22, 12]]);
+    });
+
+  });
+
+
+});

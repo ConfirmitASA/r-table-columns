@@ -29,25 +29,27 @@ class SortTable {
    *  */
 
   constructor(options){
-    let {enabled=false,source,refSource,defaultHeaderRow=-1,included,excluded,defaultSorting=[],data=[],multidimensional=false}=options;
+    let {source,refSource,defaultHeaderRow=-1,included,excluded,defaultSorting=[],data=[],multidimensional=false}=options;
 
     this._sortEvent = ReportalBase.newEvent('reportal-table-sort');
 
-    this.enabled=enabled;
-    if(source){
-      this.source=source;
-    } else {
-      throw new Error('`source` table is not specified for SortTable');
-    }
+    //if(enabled){
+      if(source){
+        this.source=source;
+      } else {
+        throw new Error('`source` table is not specified for SortTable');
+      }
 
-    this.data = data;
-    this.multidimensional = multidimensional;
+      this.data = data;
+      this.multidimensional = multidimensional;
 
-    //let tableColumns= new TableColumns({source, refSource, defaultHeaderRow});
-    // setup sort order and do initial default sorting
-    let sortableColumns=SortTable.defineSortableColumns(new TableColumns({source, refSource, defaultHeaderRow}), included, excluded);
-    this.sortOrder = new SortOrder(sortableColumns, SortTable.sort(), defaultSorting);
-    [source,refSource].forEach(src=>SortTable.listenForSort(TableColumns.getHeader(src),sortableColumns, this.sortOrder));// set up listeners for headers
+      //let tableColumns= new TableColumns({source, refSource, defaultHeaderRow});
+      // setup sort order and do initial default sorting
+      let sortableColumns=SortTable.defineSortableColumns(new TableColumns({source, refSource, defaultHeaderRow}), included, excluded);
+      this.columns = sortableColumns;
+      this.sortOrder = {sortOrder:[]} = new SortOrder({columns:sortableColumns, sortCallback:this.sort, sortCallbackScope:this, defaultSorting});
+      [source,refSource].forEach(src=>{if(src){SortTable.listenForSort(TableColumns.getHeader(src),sortableColumns, this.sortOrder)}});// set up listeners for headers
+    //}
 
     //SortTable.sort(); //initial sorting if any
   }
@@ -62,7 +64,7 @@ class SortTable {
   static defineSortableColumns(columns, included, excluded){
     let sortableColumns = [].slice.call(columns);
     sortableColumns.forEach((column,index)=>{
-      let sortable = (!(included && included.indexOf(index)==-1) || (excluded && excluded.indexOf(index)==-1)); // is in columns and not in excluded,
+      let sortable=((!included && !excluded) || (included && included.indexOf(index)!=-1) || (excluded && excluded.indexOf(index)==-1));
       if(sortable){
         column.cell.classList.add('sortable');
         if(column.refCell){column.refCell.classList.add('sortable');}
@@ -91,17 +93,19 @@ class SortTable {
 
   /**
    * Performs channeling of sorting based on whether `this.data` is `multidimensional`
+   * @param {Object} sortOrder - instance of {@link SortOrder} passed by the {@link SortOrder#sort} on initial sort
    * @fires SortTable~reportal-table-sort
    * */
-  sort(){
-    let sortOrder = this.sortOrder.sortOrder;
-    if(sortOrder && sortOrder.length>0){
+  sort(sortOrder){
+    let so = sortOrder.sortOrder || this.sortOrder.sortOrder,
+      columns = this.columns;
+    if(so && so.length>0){
       if(!this.multidimensional){
-        SortTable.sortDimension(this.data, this.columns, sortOrder);
+        SortTable.sortDimension(this.data, columns, so);
       } else { // if array has nested array blocks
-        this.data.forEach(dimension=>SortTable.sortDimension(dimension, this.columns, sortOrder));
+        this.data.forEach(dimension=>SortTable.sortDimension(dimension, this.columns, so));
       }
-      this.columns[sortOrder[0].column].cell.dispatchEvent(this._sortEvent);
+      columns[so[0].column].cell.dispatchEvent(this._sortEvent);
     }
   }
   /**
@@ -111,13 +115,13 @@ class SortTable {
    * @param {Array} sortOrder - instance of {@link SortOrder}
    * */
   static sortDimension(data,columns,sortOrder){
-    function getIndex(i){return columns[sortOrder[i].column].index}
-    function getDirection(i){return sortOrder[i].direction === 'desc' ? -1 : 1}
+    var getIndex = (i)=>{return columns[sortOrder[i].column].index};
+    var getDirection=(i)=>{return sortOrder[i].direction === 'desc' ? -1 : 1};
     data.sort((a, b)=>{ // sort rows
       if(sortOrder.length==1){ //sort one column only
         return SortTable.sorter( a[getIndex(0)], b[getIndex(0)], getDirection(0) )
       } else { //sort against two columns
-        return SortTable.sorter( a[getIndex(0)], b[getIndex(0)], getDirection(0) ) || this.constructor.sorter( a[getIndex(1)], b[getIndex(1)], getDirection(1) )
+        return SortTable.sorter( a[getIndex(0)], b[getIndex(0)], getDirection(0) ) || SortTable.sorter( a[getIndex(1)], b[getIndex(1)], getDirection(1) )
       }
     });
   }
