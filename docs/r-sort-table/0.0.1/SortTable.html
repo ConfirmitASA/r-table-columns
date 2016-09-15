@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="SortOrder.html">SortOrder</a><ul class='methods'><li data-type='method'><a href="SortOrder.html#add">add</a></li><li data-type='method'><a href="SortOrder.html#getCell">getCell</a></li><li data-type='method'><a href="SortOrder.html#remove">remove</a></li><li data-type='method'><a href="SortOrder.html#replace">replace</a></li></ul></li><li><a href="SortTable.html">SortTable</a><ul class='methods'><li data-type='method'><a href="SortTable.html#.listenForSort">listenForSort</a></li><li data-type='method'><a href="SortTable.html#.sorter">sorter</a></li><li data-type='method'><a href="SortTable.html#sort">sort</a></li></ul></li><li><a href="TableColumns.html">TableColumns</a><ul class='methods'><li data-type='method'><a href="TableColumns.html#.computeColumns">computeColumns</a></li><li data-type='method'><a href="TableColumns.html#.getDefaultHeaderRow">getDefaultHeaderRow</a></li><li data-type='method'><a href="TableColumns.html#.getHeader">getHeader</a></li><li data-type='method'><a href="TableColumns.html#.getHeaderCells">getHeaderCells</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="SortTable.html#~event:reportal-table-sort">reportal-table-sort</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="SortOrder.html">SortOrder</a><ul class='methods'><li data-type='method'><a href="SortOrder.html#add">add</a></li><li data-type='method'><a href="SortOrder.html#getCell">getCell</a></li><li data-type='method'><a href="SortOrder.html#remove">remove</a></li><li data-type='method'><a href="SortOrder.html#replace">replace</a></li></ul></li><li><a href="SortTable.html">SortTable</a><ul class='methods'><li data-type='method'><a href="SortTable.html#.defineSortableColumns">defineSortableColumns</a></li><li data-type='method'><a href="SortTable.html#.listenForSort">listenForSort</a></li><li data-type='method'><a href="SortTable.html#.sortDimension">sortDimension</a></li><li data-type='method'><a href="SortTable.html#.sorter">sorter</a></li><li data-type='method'><a href="SortTable.html#sort">sort</a></li></ul></li><li><a href="SortTable.defineSortableColumns.columns.html">columns</a></li><li><a href="SortTable.sortOrder.html">sortOrder</a></li><li><a href="TableColumns.html">TableColumns</a><ul class='methods'><li data-type='method'><a href="TableColumns.html#.computeColumns">computeColumns</a></li><li data-type='method'><a href="TableColumns.html#.getDefaultHeaderRow">getDefaultHeaderRow</a></li><li data-type='method'><a href="TableColumns.html#.getHeader">getHeader</a></li><li data-type='method'><a href="TableColumns.html#.getHeaderCells">getHeaderCells</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="SortTable.html#~event:reportal-table-sort">reportal-table-sort</a></li></ul>
 </nav>
 
 <div id="main">
@@ -337,7 +337,7 @@
 
         <tr>
             
-                <td class="name"><code>columns</code></td>
+                <td class="name"><code>included</code></td>
             
 
             <td class="type">
@@ -367,14 +367,14 @@
                 </td>
             
 
-            <td class="description last"><p>Array of column indices (incremented from 0) that will have sorting enabled. If not specified, all columns will be sortable. Optionally <code>excludedColumns</code> can be specified instead as a shorthand to pass only indices of columns to be excluded from sorting, assumning that others will be made sortable. It's important to count the column index in the defaultHeaderRow</p></td>
+            <td class="description last"><p>Array of column indices (incremented from 0) that will have sorting enabled. If not specified, all columns will be sortable. Optionally <code>excluded</code> can be specified instead as a shorthand to pass only indices of columns to be excluded from sorting, assumning that others will be made sortable. It's important to count the column index in the defaultHeaderRow</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>excludedColumns</code></td>
+                <td class="name"><code>excluded</code></td>
             
 
             <td class="type">
@@ -404,7 +404,7 @@
                 </td>
             
 
-            <td class="description last"><p>Array of column indices (incremented from 0) that will be excluded from sorting. Can be used as a shorthand instead of <code>columns</code>.</p></td>
+            <td class="description last"><p>Array of column indices (incremented from 0) that will be excluded from sorting. Can be used as a shorthand instead of <code>included</code>.</p></td>
         </tr>
 
     
@@ -552,6 +552,45 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>multidimensional</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>if <code>data</code> is single-dimensional (contains rows with data to be sorted as immediate array items: <code>data [rowItem...]</code>), then it is <code>false</code>. If it has blocks of data as items (each block containing an array of rows to be sorted: data [block [rowItem...]...]), then set it to <code>true</code>. Currently it supports only a two-level aggregation max (data-&gt;block-&gt;rowItem).</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -585,6 +624,13 @@
     
 
     
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="SortTable.sortOrder.html">sortOrder</a></dt>
+            <dd></dd>
+        </dl>
+    
 
      
 
@@ -594,6 +640,215 @@
 
     
         <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".defineSortableColumns"><span class="type-signature">(static) </span>defineSortableColumns<span class="signature">(columns, included<span class="signature-attributes">opt</span>, excluded<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="sort-table.js.html">sort-table.js</a>, <a href="sort-table.js.html#line63">line 63</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Checks the table columns array against the <code>included</code>/<code>excluded</code> columns arrays and adds a <code>sortable:true</code> property and a <code>.sortable</code> class to the sortable ones</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>columns</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>an instance of <a href="TableColumns.html"><code>TableColumns</code></a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>included</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>array of included columns indices</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>excluded</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>array of excluded columns indices</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
             
@@ -612,7 +867,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sort-table.js.html">sort-table.js</a>, <a href="sort-table.js.html#line70">line 70</a>
+        <a href="sort-table.js.html">sort-table.js</a>, <a href="sort-table.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -784,6 +1039,185 @@
 
     
 
+    <h4 class="name" id=".sortDimension"><span class="type-signature">(static) </span>sortDimension<span class="signature">(data, columns, sortOrder)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="sort-table.js.html">sort-table.js</a>, <a href="sort-table.js.html#line111">line 111</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Splits sorting into one-column or two-column. The precedence of columns in <code>sortOrder</code> is the factor defining sort priority</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>array containing row items to be sorted</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>columns</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>array of table columns from <code>SortTable#defineSortableColumns</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>sortOrder</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>instance of <a href="SortOrder.html"><code>SortOrder</code></a></p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id=".sorter"><span class="type-signature">(static) </span>sorter<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
@@ -796,7 +1230,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sort-table.js.html">sort-table.js</a>, <a href="sort-table.js.html#line103">line 103</a>
+        <a href="sort-table.js.html">sort-table.js</a>, <a href="sort-table.js.html#line126">line 126</a>
     </li></ul></dd>
     
 
@@ -880,7 +1314,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sort-table.js.html">sort-table.js</a>, <a href="sort-table.js.html#line84">line 84</a>
+        <a href="sort-table.js.html">sort-table.js</a>, <a href="sort-table.js.html#line94">line 94</a>
     </li></ul></dd>
     
 
@@ -920,7 +1354,7 @@
 
 
 <div class="description">
-    <p>Performs sorting. Can sort two columns if <code>sortOrder</code> has two items, the first of which has priority.</p>
+    <p>Performs channeling of sorting based on whether <code>this.data</code> is <code>multidimensional</code></p>
 </div>
 
 
@@ -1058,7 +1492,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Wed Sep 14 2016 17:43:32 GMT+0300 (Russia TZ 2 Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Thu Sep 15 2016 13:47:57 GMT+0300 (Russia TZ 2 Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
