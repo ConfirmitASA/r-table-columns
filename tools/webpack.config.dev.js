@@ -18,7 +18,7 @@ var baseConfig = require('./webpack.config.base.js');
 var config = Object.create(baseConfig);
 config.module.loaders.push({
   test:   /\.css$/,
-  exclude: /node_modules/,
+  //exclude: /node_modules/,
   loader:  ExtractTextPlugin.extract("style","css!postcss")
 });
 config.devtool = 'eval-source-map';
