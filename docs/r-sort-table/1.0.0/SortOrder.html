@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="SortOrder.html">SortOrder</a><ul class='methods'><li data-type='method'><a href="SortOrder.html#add">add</a></li><li data-type='method'><a href="SortOrder.html#getCell">getCell</a></li><li data-type='method'><a href="SortOrder.html#remove">remove</a></li><li data-type='method'><a href="SortOrder.html#replace">replace</a></li></ul></li><li><a href="SortTable.html">SortTable</a><ul class='methods'><li data-type='method'><a href="SortTable.html#.defineSortableColumns">defineSortableColumns</a></li><li data-type='method'><a href="SortTable.html#.listenForSort">listenForSort</a></li><li data-type='method'><a href="SortTable.html#.sortDimension">sortDimension</a></li><li data-type='method'><a href="SortTable.html#.sorter">sorter</a></li><li data-type='method'><a href="SortTable.html#sort">sort</a></li></ul></li><li><a href="SortTable.defineSortableColumns.columns.html">columns</a></li><li><a href="SortTable.sortOrder.html">sortOrder</a></li><li><a href="TableColumns.html">TableColumns</a><ul class='methods'><li data-type='method'><a href="TableColumns.html#.computeColumns">computeColumns</a></li><li data-type='method'><a href="TableColumns.html#.getDefaultHeaderRow">getDefaultHeaderRow</a></li><li data-type='method'><a href="TableColumns.html#.getHeader">getHeader</a></li><li data-type='method'><a href="TableColumns.html#.getHeaderCells">getHeaderCells</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="SortTable.html#~event:reportal-table-sort">reportal-table-sort</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="SortOrder.html">SortOrder</a><ul class='methods'><li data-type='method'><a href="SortOrder.html#add">add</a></li><li data-type='method'><a href="SortOrder.html#getCell">getCell</a></li><li data-type='method'><a href="SortOrder.html#remove">remove</a></li><li data-type='method'><a href="SortOrder.html#replace">replace</a></li></ul></li><li><a href="SortTable.html">SortTable</a><ul class='methods'><li data-type='method'><a href="SortTable.html#.defineSortableColumns">defineSortableColumns</a></li><li data-type='method'><a href="SortTable.html#.listenForSort">listenForSort</a></li><li data-type='method'><a href="SortTable.html#.sortDimension">sortDimension</a></li><li data-type='method'><a href="SortTable.html#.sorter">sorter</a></li><li data-type='method'><a href="SortTable.html#sort">sort</a></li></ul></li><li><a href="TableColumns.html">TableColumns</a><ul class='methods'><li data-type='method'><a href="TableColumns.html#.computeColumns">computeColumns</a></li><li data-type='method'><a href="TableColumns.html#.getDefaultHeaderRow">getDefaultHeaderRow</a></li><li data-type='method'><a href="TableColumns.html#.getHeader">getHeader</a></li><li data-type='method'><a href="TableColumns.html#.getHeaderCells">getHeaderCells</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="SortTable.html#~event:reportal-table-sort">reportal-table-sort</a></li></ul>
 </nav>
 
 <div id="main">
@@ -53,7 +53,7 @@
 
     
 
-    <h4 class="name" id="SortOrder"><span class="type-signature"></span>new SortOrder<span class="signature">(columns, sortCallback, defaultSorting<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    <h4 class="name" id="SortOrder"><span class="type-signature"></span>new SortOrder<span class="signature">(options)</span><span class="type-signature"> &rarr; {Array}</span></h4>
 
     
 
@@ -65,7 +65,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line11">line 11</a>
+        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line13">line 13</a>
     </li></ul></dd>
     
 
@@ -131,6 +131,48 @@
         <th>Type</th>
 
         
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>configuration options</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
         <th>Attributes</th>
         
 
@@ -181,6 +223,11 @@
 
             <td class="type">
             
+                
+<span class="param-type">function</span>
+
+
+            
             </td>
 
             
@@ -196,6 +243,37 @@
             
 
             <td class="description last"><p>function that performs sorting based on the <code>sortOrder</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>sortCallbackScope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>scope in which sort callback needs to be executed</p></td>
         </tr>
 
     
@@ -307,6 +385,13 @@
     </tbody>
 </table>
 
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
 
 
 
@@ -375,7 +460,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line48">line 48</a>
+        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -580,7 +665,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line30">line 30</a>
+        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line39">line 39</a>
     </li></ul></dd>
     
 
@@ -731,7 +816,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line64">line 64</a>
+        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -887,7 +972,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line77">line 77</a>
+        <a href="sort-order.js.html">sort-order.js</a>, <a href="sort-order.js.html#line86">line 86</a>
     </li></ul></dd>
     
 
@@ -1093,7 +1178,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Thu Sep 15 2016 13:47:57 GMT+0300 (Russia TZ 2 Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Fri Sep 16 2016 12:30:39 GMT+0300 (Russia TZ 2 Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

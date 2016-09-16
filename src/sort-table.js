@@ -8,7 +8,12 @@ import SortOrder from "./sort-order";
  */
 
 /**
- *
+ * @class SortTable
+ * @prop {HTMLTableElement} source - source table
+ * @prop {Array} data - data array to be sorted
+ * @prop {Boolean} multidimensional - if `data` is single-dimensional (contains rows with data to be sorted as immediate array items: `data [rowItem...]`), then it is `false`. If it has blocks of data as items (each block containing an array of rows to be sorted: data [block [rowItem...]...]), then set it to `true`. Currently it supports only a two-level aggregation max (data->block->rowItem).
+ * @prop {SortOrder} sortOrder - instance of {@link SortOrder}
+ * @prop {TableColumns} columns - instance of {@link TableColumns} with a modified prototype (added `sortable:true` and `.sortable` to sortable columns)
  * */
 class SortTable {
   /**
@@ -25,12 +30,11 @@ class SortTable {
    * @param {String} options.defaultSorting.direction - sort direction (`asc`|`desc`)
    * @param {Array} options.data - data with information for rows to be sorted
    * @param {Boolean} [options.multidimensional=false] - if `data` is single-dimensional (contains rows with data to be sorted as immediate array items: `data [rowItem...]`), then it is `false`. If it has blocks of data as items (each block containing an array of rows to be sorted: data [block [rowItem...]...]), then set it to `true`. Currently it supports only a two-level aggregation max (data->block->rowItem).
-   * @borrows SortOrder as sortOrder
+   *
    *  */
 
   constructor(options){
     let {source,refSource,defaultHeaderRow=-1,included,excluded,defaultSorting=[],data=[],multidimensional=false}=options;
-
     this._sortEvent = ReportalBase.newEvent('reportal-table-sort');
 
     //if(enabled){
@@ -39,7 +43,6 @@ class SortTable {
       } else {
         throw new Error('`source` table is not specified for SortTable');
       }
-
       this.data = data;
       this.multidimensional = multidimensional;
 
@@ -57,7 +60,7 @@ class SortTable {
 
   /**
    * Checks the table columns array against the `included`/`excluded` columns arrays and adds a `sortable:true` property and a `.sortable` class to the sortable ones
-   * @param {Array} columns - an instance of {@link TableColumns}
+   * @param {TableColumns} columns - an instance of {@link TableColumns}
    * @param {Array} [included] - array of included columns indices
    * @param {Array} [excluded] - array of excluded columns indices
    * */
@@ -77,8 +80,8 @@ class SortTable {
   /**
    * sets up listeners for column headers available for click
    * @param {HTMLElement} delegatedTarget - element that will receive clicks and see if they are valid, `thead` is recommended to boil down to header clicks only
-   * @param {Array} columns - array of table columns from {@link SortTable#defineSortableColumns}
-   * @param {Array} sortOrder - instance of {@link SortOrder}
+   * @param {TableColumns} columns - array of table columns from {@link SortTable#defineSortableColumns}
+   * @param {SortOrder} sortOrder - instance of {@link SortOrder}
    * @listens click
    * */
   static listenForSort(delegatedTarget, columns, sortOrder){
@@ -93,7 +96,7 @@ class SortTable {
 
   /**
    * Performs channeling of sorting based on whether `this.data` is `multidimensional`
-   * @param {Object} sortOrder - instance of {@link SortOrder} passed by the {@link SortOrder#sort} on initial sort
+   * @param {SortOrder} sortOrder - instance of {@link SortOrder} passed by the {@link SortOrder#sort} on initial sort
    * @fires SortTable~reportal-table-sort
    * */
   sort(sortOrder){
@@ -111,8 +114,8 @@ class SortTable {
   /**
    * Splits sorting into one-column or two-column. The precedence of columns in `sortOrder` is the factor defining sort priority
    * @param {Array} data - array containing row items to be sorted
-   * @param {Array} columns - array of table columns from {@link SortTable#defineSortableColumns}
-   * @param {Array} sortOrder - instance of {@link SortOrder}
+   * @param {TableColumns} columns - array of table columns from {@link SortTable#defineSortableColumns}
+   * @param {SortOrder} sortOrder - instance of {@link SortOrder}
    * */
   static sortDimension(data,columns,sortOrder){
     var getIndex = (i)=>{return columns[sortOrder[i].column].index};

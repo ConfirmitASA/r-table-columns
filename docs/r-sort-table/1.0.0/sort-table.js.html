@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="SortOrder.html">SortOrder</a><ul class='methods'><li data-type='method'><a href="SortOrder.html#add">add</a></li><li data-type='method'><a href="SortOrder.html#getCell">getCell</a></li><li data-type='method'><a href="SortOrder.html#remove">remove</a></li><li data-type='method'><a href="SortOrder.html#replace">replace</a></li></ul></li><li><a href="SortTable.html">SortTable</a><ul class='methods'><li data-type='method'><a href="SortTable.html#.defineSortableColumns">defineSortableColumns</a></li><li data-type='method'><a href="SortTable.html#.listenForSort">listenForSort</a></li><li data-type='method'><a href="SortTable.html#.sortDimension">sortDimension</a></li><li data-type='method'><a href="SortTable.html#.sorter">sorter</a></li><li data-type='method'><a href="SortTable.html#sort">sort</a></li></ul></li><li><a href="SortTable.defineSortableColumns.columns.html">columns</a></li><li><a href="SortTable.sortOrder.html">sortOrder</a></li><li><a href="TableColumns.html">TableColumns</a><ul class='methods'><li data-type='method'><a href="TableColumns.html#.computeColumns">computeColumns</a></li><li data-type='method'><a href="TableColumns.html#.getDefaultHeaderRow">getDefaultHeaderRow</a></li><li data-type='method'><a href="TableColumns.html#.getHeader">getHeader</a></li><li data-type='method'><a href="TableColumns.html#.getHeaderCells">getHeaderCells</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="SortTable.html#~event:reportal-table-sort">reportal-table-sort</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="SortOrder.html">SortOrder</a><ul class='methods'><li data-type='method'><a href="SortOrder.html#add">add</a></li><li data-type='method'><a href="SortOrder.html#getCell">getCell</a></li><li data-type='method'><a href="SortOrder.html#remove">remove</a></li><li data-type='method'><a href="SortOrder.html#replace">replace</a></li></ul></li><li><a href="SortTable.html">SortTable</a><ul class='methods'><li data-type='method'><a href="SortTable.html#.defineSortableColumns">defineSortableColumns</a></li><li data-type='method'><a href="SortTable.html#.listenForSort">listenForSort</a></li><li data-type='method'><a href="SortTable.html#.sortDimension">sortDimension</a></li><li data-type='method'><a href="SortTable.html#.sorter">sorter</a></li><li data-type='method'><a href="SortTable.html#sort">sort</a></li></ul></li><li><a href="TableColumns.html">TableColumns</a><ul class='methods'><li data-type='method'><a href="TableColumns.html#.computeColumns">computeColumns</a></li><li data-type='method'><a href="TableColumns.html#.getDefaultHeaderRow">getDefaultHeaderRow</a></li><li data-type='method'><a href="TableColumns.html#.getHeader">getHeader</a></li><li data-type='method'><a href="TableColumns.html#.getHeaderCells">getHeaderCells</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="SortTable.html#~event:reportal-table-sort">reportal-table-sort</a></li></ul>
 </nav>
 
 <div id="main">
@@ -47,7 +47,12 @@ import SortOrder from "./sort-order";
  */
 
 /**
- *
+ * @class SortTable
+ * @prop {HTMLTableElement} source - source table
+ * @prop {Array} data - data array to be sorted
+ * @prop {Boolean} multidimensional - if `data` is single-dimensional (contains rows with data to be sorted as immediate array items: `data [rowItem...]`), then it is `false`. If it has blocks of data as items (each block containing an array of rows to be sorted: data [block [rowItem...]...]), then set it to `true`. Currently it supports only a two-level aggregation max (data->block->rowItem).
+ * @prop {SortOrder} sortOrder - instance of {@link SortOrder}
+ * @prop {TableColumns} columns - instance of {@link TableColumns} with a modified prototype (added `sortable:true` and `.sortable` to sortable columns)
  * */
 class SortTable {
   /**
@@ -64,29 +69,29 @@ class SortTable {
    * @param {String} options.defaultSorting.direction - sort direction (`asc`|`desc`)
    * @param {Array} options.data - data with information for rows to be sorted
    * @param {Boolean} [options.multidimensional=false] - if `data` is single-dimensional (contains rows with data to be sorted as immediate array items: `data [rowItem...]`), then it is `false`. If it has blocks of data as items (each block containing an array of rows to be sorted: data [block [rowItem...]...]), then set it to `true`. Currently it supports only a two-level aggregation max (data->block->rowItem).
-   * @borrows SortOrder as sortOrder
+   *
    *  */
 
   constructor(options){
-    let {enabled=false,source,refSource,defaultHeaderRow=-1,included,excluded,defaultSorting=[],data=[],multidimensional=false}=options;
-
+    let {source,refSource,defaultHeaderRow=-1,included,excluded,defaultSorting=[],data=[],multidimensional=false}=options;
     this._sortEvent = ReportalBase.newEvent('reportal-table-sort');
 
-    this.enabled=enabled;
-    if(source){
-      this.source=source;
-    } else {
-      throw new Error('`source` table is not specified for SortTable');
-    }
+    //if(enabled){
+      if(source){
+        this.source=source;
+      } else {
+        throw new Error('`source` table is not specified for SortTable');
+      }
+      this.data = data;
+      this.multidimensional = multidimensional;
 
-    this.data = data;
-    this.multidimensional = multidimensional;
-
-    //let tableColumns= new TableColumns({source, refSource, defaultHeaderRow});
-    // setup sort order and do initial default sorting
-    let sortableColumns=SortTable.defineSortableColumns(new TableColumns({source, refSource, defaultHeaderRow}), included, excluded);
-    this.sortOrder = new SortOrder(sortableColumns, SortTable.sort(), defaultSorting);
-    [source,refSource].forEach(src=>SortTable.listenForSort(TableColumns.getHeader(src),sortableColumns, this.sortOrder));// set up listeners for headers
+      //let tableColumns= new TableColumns({source, refSource, defaultHeaderRow});
+      // setup sort order and do initial default sorting
+      let sortableColumns=SortTable.defineSortableColumns(new TableColumns({source, refSource, defaultHeaderRow}), included, excluded);
+      this.columns = sortableColumns;
+      this.sortOrder = {sortOrder:[]} = new SortOrder({columns:sortableColumns, sortCallback:this.sort, sortCallbackScope:this, defaultSorting});
+      [source,refSource].forEach(src=>{if(src){SortTable.listenForSort(TableColumns.getHeader(src),sortableColumns, this.sortOrder)}});// set up listeners for headers
+    //}
 
     //SortTable.sort(); //initial sorting if any
   }
@@ -94,26 +99,28 @@ class SortTable {
 
   /**
    * Checks the table columns array against the `included`/`excluded` columns arrays and adds a `sortable:true` property and a `.sortable` class to the sortable ones
-   * @param {Array} columns - an instance of {@link TableColumns}
+   * @param {TableColumns} columns - an instance of {@link TableColumns}
    * @param {Array} [included] - array of included columns indices
    * @param {Array} [excluded] - array of excluded columns indices
-   * @borrows SortOrder as columns
    * */
   static defineSortableColumns(columns, included, excluded){
-    return columns.map((column,index)=>{
-      let sortable = (!(included &amp;&amp; included.indexOf(column.cell.cellIndex)==-1) || (excluded &amp;&amp; excluded.indexOf(index)==-1)); // is in columns and not in excluded,
+    let sortableColumns = [].slice.call(columns);
+    sortableColumns.forEach((column,index)=>{
+      let sortable=((!included &amp;&amp; !excluded) || (included &amp;&amp; included.indexOf(index)!=-1) || (excluded &amp;&amp; excluded.indexOf(index)==-1));
       if(sortable){
         column.cell.classList.add('sortable');
+        if(column.refCell){column.refCell.classList.add('sortable');}
         column.sortable = true;
       }
-    })
+    });
+    return sortableColumns
   }
 
   /**
    * sets up listeners for column headers available for click
    * @param {HTMLElement} delegatedTarget - element that will receive clicks and see if they are valid, `thead` is recommended to boil down to header clicks only
-   * @param {Array} columns - array of table columns from {@link SortTable#defineSortableColumns}
-   * @param {Array} sortOrder - instance of {@link SortOrder}
+   * @param {TableColumns} columns - array of table columns from {@link SortTable#defineSortableColumns}
+   * @param {SortOrder} sortOrder - instance of {@link SortOrder}
    * @listens click
    * */
   static listenForSort(delegatedTarget, columns, sortOrder){
@@ -128,33 +135,35 @@ class SortTable {
 
   /**
    * Performs channeling of sorting based on whether `this.data` is `multidimensional`
+   * @param {SortOrder} sortOrder - instance of {@link SortOrder} passed by the {@link SortOrder#sort} on initial sort
    * @fires SortTable~reportal-table-sort
    * */
-  sort(){
-    let sortOrder = this.sortOrder.sortOrder;
-    if(sortOrder &amp;&amp; sortOrder.length>0){
+  sort(sortOrder){
+    let so = sortOrder.sortOrder || this.sortOrder.sortOrder,
+      columns = this.columns;
+    if(so &amp;&amp; so.length>0){
       if(!this.multidimensional){
-        SortTable.sortDimension(this.data, this.columns, sortOrder);
+        SortTable.sortDimension(this.data, columns, so);
       } else { // if array has nested array blocks
-        this.data.forEach(dimension=>SortTable.sortDimension(dimension, this.columns, sortOrder));
+        this.data.forEach(dimension=>SortTable.sortDimension(dimension, this.columns, so));
       }
-      this.columns[sortOrder[0].column].cell.dispatchEvent(this._sortEvent);
+      columns[so[0].column].cell.dispatchEvent(this._sortEvent);
     }
   }
   /**
    * Splits sorting into one-column or two-column. The precedence of columns in `sortOrder` is the factor defining sort priority
    * @param {Array} data - array containing row items to be sorted
-   * @param {Array} columns - array of table columns from {@link SortTable#defineSortableColumns}
-   * @param {Array} sortOrder - instance of {@link SortOrder}
+   * @param {TableColumns} columns - array of table columns from {@link SortTable#defineSortableColumns}
+   * @param {SortOrder} sortOrder - instance of {@link SortOrder}
    * */
   static sortDimension(data,columns,sortOrder){
-    function getIndex(i){return columns[sortOrder[i].column].index}
-    function getDirection(i){return sortOrder[i].direction === 'desc' ? -1 : 1}
+    var getIndex = (i)=>{return columns[sortOrder[i].column].index};
+    var getDirection=(i)=>{return sortOrder[i].direction === 'desc' ? -1 : 1};
     data.sort((a, b)=>{ // sort rows
       if(sortOrder.length==1){ //sort one column only
         return SortTable.sorter( a[getIndex(0)], b[getIndex(0)], getDirection(0) )
       } else { //sort against two columns
-        return SortTable.sorter( a[getIndex(0)], b[getIndex(0)], getDirection(0) ) || this.constructor.sorter( a[getIndex(1)], b[getIndex(1)], getDirection(1) )
+        return SortTable.sorter( a[getIndex(0)], b[getIndex(0)], getDirection(0) ) || SortTable.sorter( a[getIndex(1)], b[getIndex(1)], getDirection(1) )
       }
     });
   }
@@ -196,7 +205,7 @@ export default SortTable
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Thu Sep 15 2016 13:47:57 GMT+0300 (Russia TZ 2 Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Fri Sep 16 2016 12:30:39 GMT+0300 (Russia TZ 2 Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
