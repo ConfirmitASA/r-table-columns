@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jahglow/r-sort-table.svg?branch=master)](https://travis-ci.org/jahglow/r-sort-table) [![codecov](https://codecov.io/gh/jahglow/r-sort-table/branch/master/graph/badge.svg)](https://codecov.io/gh/jahglow/r-sort-table)
+
 # ES6 Karma Jasmine Webpack Boilerplate
 
 _No Grunt/Gulp required!_
