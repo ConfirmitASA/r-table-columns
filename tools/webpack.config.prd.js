@@ -33,6 +33,7 @@ config.plugins = [
   }),
   new ExtractTextPlugin(name+'.css')
 ];
+
 config.postcss =  function (webpack) {
   return [
     require("postcss-import")({

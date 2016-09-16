@@ -2,4 +2,6 @@
  * Created by IvanP on 07.09.2016.
  */
 
-import Calculator from "./Calculator"
+import TableColumns from "./table-columns";
+import SortOrder from "./sort-order";
+import SortTable from "./sort-table";
