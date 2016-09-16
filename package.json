@@ -15,7 +15,8 @@
     "lint": "eslint src",
     "docs": "node_modules/.bin/jsdoc --configure jsdoc.conf --verbose",
     "docs-commit": "git subtree push --prefix docs/r-sort-table origin gh-pages",
-    "test": "karma start --single-run --no-auto-watch karma.config.js"
+    "test": "karma start --single-run --no-auto-watch karma.config.js",
+    "report-coverage": "codecov -f coverage/lcov.info"
   },
   "keywords": [],
   "author": "ConfirmitASA",
@@ -29,6 +30,7 @@
     "babel-plugin-add-module-exports": "^0.1.2",
     "babel-plugin-istanbul": "^2.0.1",
     "babel-preset-es2015": "^6.9.0",
+    "codecov": "^1.0.1",
     "css-loader": "^0.23.1",
     "docdash": "^0.4.0",
     "eslint": "^1.10.3",
