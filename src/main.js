@@ -6,8 +6,7 @@ import TableColumns from "./table-columns";
 import SortOrder from "./sort-order";
 import SortTable from "./sort-table";
 
-
-window.R = {
+window.Reportal = window.Reportal || {
   TableColumns,
   SortOrder,
   SortTable
