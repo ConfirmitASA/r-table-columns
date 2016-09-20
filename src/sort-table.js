@@ -86,9 +86,7 @@ class SortTable {
    * @listens click
    * */
   static listenForSort(delegatedTarget, columns, sortOrder){
-    //columns.forEach(column=>{column.cell.addEventListener('click',e=>{console.log(e)});});
     delegatedTarget.addEventListener('click',e=>{
-      //console.log(e);
       // if it's a table cell, is in columns array and is sortable
       let columnIndex = columns.filter(col=>col.sortable).map(function(col){return col.cell;}).indexOf(e.target);
       if((e.target.tagName == 'TD' || e.target.tagName == 'TH') && columnIndex>-1){

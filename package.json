@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/ConfirmitASA/r-sort-table"
   },
-  "config":{
+  "config": {
     "v": "2.0.0"
   },
   "scripts": {
@@ -61,6 +61,7 @@
     "postcss-import": "^8.1.2",
     "postcss-inline-svg": "github:trysound/postcss-inline-svg",
     "postcss-loader": "^0.9.1",
+    "r-visual-fixture-test": "github:confirmitasa/r-visual-fixture-test",
     "rimraf": "^2.5.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1"
