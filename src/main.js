@@ -1,10 +1,10 @@
 /**
  * Created by IvanP on 07.09.2016.
  */
-require('./sort-table-styles.css');
+var styles = require('./sort-table-styles.css');
 
 import TableColumns from "./table-columns";
-import ReportalBase from "../node_modules/r-reporal-base";
+import ReportalBase from "r-reporal-base/src/reportal-base";
 import SortOrder from "./sort-order";
 import SortTable from "./sort-table";
 
