@@ -8,3 +8,5 @@ window.Reportal = window.Reportal || {};
 ReportalBase.mixin(window.Reportal,{
   TableColumns,
 });
+
+export default TableColumns;
