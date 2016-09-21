@@ -4,8 +4,7 @@
 
 class TableColumns{
   /**
-   * Creates an array of objects corresponding to the cells of `defaultHeaderRow`, that contain `sortable` property, denoting the column is sortable,
-   * `index` of the column and reference to the `cell`. Adds `.sortable` to a sortable cell
+   * Creates an array of objects corresponding to the cells of `defaultHeaderRow`.
    * @param {Object} options - options passed to configure the Sorting
    * @param {HTMLTableElement} options.source - source table sorting will be applied to
    * @param {HTMLTableElement} options.refSource - floating header if any

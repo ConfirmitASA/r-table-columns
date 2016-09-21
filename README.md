@@ -1,27 +1,9 @@
-[![Build Status](https://travis-ci.org/jahglow/r-sort-table.svg?branch=master)](https://travis-ci.org/jahglow/r-sort-table) [![codecov](https://codecov.io/gh/jahglow/r-sort-table/branch/master/graph/badge.svg)](https://codecov.io/gh/jahglow/r-sort-table)
+[![Build Status](https://travis-ci.org/jahglow/r-table-columns.svg?branch=master)](https://travis-ci.org/jahglow/r-table-columns) [![codecov](https://codecov.io/gh/jahglow/r-table-columns/branch/master/graph/badge.svg)](https://codecov.io/gh/jahglow/r-table-columns)
 
-# ES6 Karma Jasmine Webpack Boilerplate
+# `r-table-columns`
 
-_No Grunt/Gulp required!_
-
-Boilerplate for building a client-based JavaScript library in ES6 using the following components:
-
-* [Babel](https://babeljs.io/)
-* [webpack](https://webpack.github.io/)
-* [Jasmine](http://jasmine.github.io/)
-* [Karma](http://karma-runner.github.io/)
-* babel-plugin-istanbul
-* [ESLint](http://eslint.org/) with [eslint-config-airbnb](https://github.com/airbnb/javascript)
-* PostCSS with Autoprefixer (for autoprefixing vendors), includes and CSSnext (for css custom-properties etc.) and cssnano (for CSS minification)
-* JSDoc3 to auto-generate JSDoc documentation for JS that uses JSDoc comment syntax.
-
-
-##SRC
-
-`./src` folder must contain at least `main.js` file. There you may write your code, but preferably write it in other files that are named according to their main Class and import them into main.js
-If you have a `.css` file that need to be included, import it into the top of `main.js` file via `require("./file/path/relative/to/main/js/file/styles.css")` which may include imports of other css files via `@import "./path/to/file.css"`. This `.css` file will be run through PostCSS.
-These two files are the ones that import content (via `require("path/to/module.js")` or `import ClassName from "./class/path/ClassName.js"` and via `@import "path/to/module.css";`) from other files located in the same folder/nested folders (if you need several files with classes)
-or act as the only js/css files for the module.
+`TableColumns` builds an array of columns that contains column information in the ro indexed by `defaultHeaderRow` which is passed in method configuration. 
+A `defaultHeaderRow` is to be considered as a target row for actions to take place, like sorting or filtering: clicking on those column headers in the row would perform the action.
 
 ### Commands (configured in package.json)
 

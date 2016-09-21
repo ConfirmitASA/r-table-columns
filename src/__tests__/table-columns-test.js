@@ -119,8 +119,4 @@ describe('TableColumns', () => {
       expect(TableColumns.computeColumns(thead, null, -1)).not.toEqual(new TableColumns({source, defaultHeaderRow:0}));
     });
   });
-
-
-
-
 });
